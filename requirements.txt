@@ -8,8 +8,7 @@ google-auth-oauthlib==1.1.0
 google-auth-httplib2==0.1.1
 
 # PDF Processing
-PyMuPDF==1.23.8
+PyMuPDF>=1.24.0
 
 # Additional dependencies
 python-dotenv==1.0.0
-fitz==0.0.1

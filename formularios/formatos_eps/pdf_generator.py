@@ -12,11 +12,60 @@ COORDENADAS_CAMPOS = {
     'SEGUNDO_APELLIDO': {'x': 200, 'y': 163},
     'PRIMER_NOMBRE': {'x': 330, 'y': 163},
     'SEGUNDO_NOMBRE': {'x': 480, 'y': 163},
+    'PAIS_NACIMIENTO': {'x': 505, 'y': 181},
+    'DEPARTAMENTO_NACIMIENTO': {'x': 50, 'y': 200},
+    'CIUDAD_NACIMIENTO': {'x': 130, 'y': 200},
+}
+
+# Coordenadas para fecha de nacimiento (cada dígito en su posición)
+# Formato: DDMMYYYY
+COORDENADAS_FECHA_NACIMIENTO = [
+    {'x': 290, 'y': 200},  # D1
+    {'x': 310, 'y': 200},  # D2
+    {'x': 330, 'y': 200},  # M1
+    {'x': 350, 'y': 200},  # M2
+    {'x': 370, 'y': 200},  # Y1
+    {'x': 390, 'y': 200},  # Y2
+    {'x': 410, 'y': 200},  # Y3
+    {'x': 435, 'y': 200},  # Y4
+]
+
+# Coordenadas para marcar sexo con X
+COORDENADAS_SEXO = {
+    '0': {'x': 302.5, 'y': 176.5},  # Masculino
+    '1': {'x': 267.5, 'y': 176.5},  # Femenino
 }
 
 # Ruta al PDF original (plantilla)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 PDF_TEMPLATE = os.path.join(BASE_DIR, 'formatos', 'formulario_de_afiliacion_eps_delagente_comfenalco_valle.pdf')
+
+
+def convertir_fecha_yyyymmdd_a_ddmmyyyy(fecha_str):
+    """
+    Convierte fecha de formato YYYYMMDD a DDMMYYYY.
+
+    Args:
+        fecha_str (str): Fecha en formato YYYYMMDD (ej: "19900315")
+
+    Returns:
+        str: Fecha en formato DDMMYYYY (ej: "15031990")
+    """
+    if not fecha_str or len(fecha_str) != 8:
+        return ''
+
+    # Limpiar espacios
+    fecha_str = str(fecha_str).strip()
+
+    try:
+        # YYYYMMDD -> DDMMYYYY
+        yyyy = fecha_str[0:4]
+        mm = fecha_str[4:6]
+        dd = fecha_str[6:8]
+
+        return dd + mm + yyyy
+    except:
+        return ''
 
 
 def split_nombres(nombres_completos):
@@ -75,6 +124,54 @@ def insertar_texto_en_pdf(page, texto, x, y, fontsize=10, color=(0, 0, 0)):
     )
 
 
+def marcar_x_en_pdf(page, x, y, size=7, color=(0, 0, 0)):
+    """
+    Marca una X en una coordenada específica del PDF.
+
+    Args:
+        page: Página de PyMuPDF
+        x (int/float): Coordenada X
+        y (int/float): Coordenada Y
+        size (int): Tamaño de la X
+        color (tuple): Color RGB (0-1, 0-1, 0-1)
+    """
+    # Dibujar línea diagonal de arriba-izquierda a abajo-derecha
+    page.draw_line(
+        (x - size/2, y - size/2),
+        (x + size/2, y + size/2),
+        color=color,
+        width=1.5
+    )
+
+    # Dibujar línea diagonal de arriba-derecha a abajo-izquierda
+    page.draw_line(
+        (x + size/2, y - size/2),
+        (x - size/2, y + size/2),
+        color=color,
+        width=1.5
+    )
+
+
+def insertar_fecha_nacimiento(page, fecha_yyyymmdd):
+    """
+    Inserta la fecha de nacimiento distribuyendo cada dígito en su coordenada.
+
+    Args:
+        page: Página de PyMuPDF
+        fecha_yyyymmdd (str): Fecha en formato YYYYMMDD
+    """
+    # Convertir a DDMMYYYY
+    fecha_ddmmyyyy = convertir_fecha_yyyymmdd_a_ddmmyyyy(fecha_yyyymmdd)
+
+    if not fecha_ddmmyyyy or len(fecha_ddmmyyyy) != 8:
+        return
+
+    # Insertar cada dígito en su coordenada
+    for i, digito in enumerate(fecha_ddmmyyyy):
+        coords = COORDENADAS_FECHA_NACIMIENTO[i]
+        insertar_texto_en_pdf(page, digito, coords['x'], coords['y'], fontsize=10)
+
+
 def rellenar_pdf_empleado(datos_empleado, output_path):
     """
     Rellena el PDF del formulario EPS con los datos del empleado.
@@ -107,6 +204,11 @@ def rellenar_pdf_empleado(datos_empleado, output_path):
         primer_apellido = datos_empleado.get('PRIMER_APELLIDO', '')
         segundo_apellido = datos_empleado.get('SEGUNDO_APELLIDO', '')
         nombres_completos = datos_empleado.get('NOMBRES', '')
+        fecha_nacimiento = datos_empleado.get('FECHA_NACIMIENTO', '')
+        pais_nacimiento = datos_empleado.get('PAIS_NACIMIENTO', '')
+        codigo_sexo = datos_empleado.get('CODIGO_SEXO', '')
+        departamento_nacimiento = datos_empleado.get('DEPARTAMENTO_NACIMIENTO', '')
+        ciudad_nacimiento = datos_empleado.get('CIUDAD_NACIMIENTO', '')
 
         # Dividir nombres
         primer_nombre, segundo_nombre = split_nombres(nombres_completos)
@@ -131,6 +233,30 @@ def rellenar_pdf_empleado(datos_empleado, output_path):
         if segundo_nombre:
             coords = COORDENADAS_CAMPOS['SEGUNDO_NOMBRE']
             insertar_texto_en_pdf(page, segundo_nombre, coords['x'], coords['y'], fontsize=10)
+
+        # Insertar FECHA DE NACIMIENTO (distribuyendo cada dígito)
+        if fecha_nacimiento:
+            insertar_fecha_nacimiento(page, fecha_nacimiento)
+
+        # Insertar PAIS DE NACIMIENTO
+        if pais_nacimiento:
+            coords = COORDENADAS_CAMPOS['PAIS_NACIMIENTO']
+            insertar_texto_en_pdf(page, pais_nacimiento, coords['x'], coords['y'], fontsize=10)
+
+        # Marcar SEXO con X
+        if codigo_sexo in COORDENADAS_SEXO:
+            coords = COORDENADAS_SEXO[str(codigo_sexo)]
+            marcar_x_en_pdf(page, coords['x'], coords['y'], size=7)
+
+        # Insertar DEPARTAMENTO DE NACIMIENTO
+        if departamento_nacimiento:
+            coords = COORDENADAS_CAMPOS['DEPARTAMENTO_NACIMIENTO']
+            insertar_texto_en_pdf(page, departamento_nacimiento, coords['x'], coords['y'], fontsize=10)
+
+        # Insertar CIUDAD DE NACIMIENTO
+        if ciudad_nacimiento:
+            coords = COORDENADAS_CAMPOS['CIUDAD_NACIMIENTO']
+            insertar_texto_en_pdf(page, ciudad_nacimiento, coords['x'], coords['y'], fontsize=10)
 
         # Guardar el PDF generado
         doc.save(output_path)

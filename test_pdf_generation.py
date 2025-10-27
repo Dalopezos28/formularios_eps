@@ -26,6 +26,11 @@ datos_prueba = {
     'PRIMER_APELLIDO': 'GARCIA',
     'SEGUNDO_APELLIDO': 'LOPEZ',
     'NOMBRES': 'JUAN CARLOS',
+    'FECHA_NACIMIENTO': '19900315',  # YYYYMMDD
+    'PAIS_NACIMIENTO': 'COLOMBIA',
+    'CODIGO_SEXO': '1',  # 0=Masculino, 1=Femenino
+    'DEPARTAMENTO_NACIMIENTO': 'VALLE DEL CAUCA',
+    'CIUDAD_NACIMIENTO': 'CALI',
 }
 
 print("\n1. Datos de prueba:")
@@ -33,6 +38,11 @@ print(f"   - CEDULA: {datos_prueba['CEDULA']}")
 print(f"   - PRIMER APELLIDO: {datos_prueba['PRIMER_APELLIDO']}")
 print(f"   - SEGUNDO APELLIDO: {datos_prueba['SEGUNDO_APELLIDO']}")
 print(f"   - NOMBRES: {datos_prueba['NOMBRES']}")
+print(f"   - FECHA NACIMIENTO: {datos_prueba['FECHA_NACIMIENTO']} (YYYYMMDD)")
+print(f"   - PAIS: {datos_prueba['PAIS_NACIMIENTO']}")
+print(f"   - SEXO: {datos_prueba['CODIGO_SEXO']} (0=M, 1=F)")
+print(f"   - DEPARTAMENTO: {datos_prueba['DEPARTAMENTO_NACIMIENTO']}")
+print(f"   - CIUDAD: {datos_prueba['CIUDAD_NACIMIENTO']}")
 
 output_path = "formulario_generado_prueba.pdf"
 

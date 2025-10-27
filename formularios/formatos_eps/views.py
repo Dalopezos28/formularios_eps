@@ -45,7 +45,11 @@ def search_results_view(request):
                     'PRIMER_APELLIDO': result_data.get('PRIMER APELLIDO', ''),
                     'SEGUNDO_APELLIDO': result_data.get('SEGUNDO APELLIDO', ''),
                     'NOMBRES': result_data.get('NOMBRES', ''),
-                    # Puedes agregar más campos aquí si los necesitas
+                    'FECHA_NACIMIENTO': result_data.get('FECHA DE NACIMIENTO', ''),
+                    'PAIS_NACIMIENTO': result_data.get('PAIS DE NACIMIENTO', ''),
+                    'CODIGO_SEXO': result_data.get('CODIGO SEXO', ''),
+                    'DEPARTAMENTO_NACIMIENTO': result_data.get('DEPARTAMENTO NACIMIENTO', ''),
+                    'CIUDAD_NACIMIENTO': result_data.get('CIUDAD DE NACIMIENTO', ''),
                 }
                 results = normalized_result
         except ConnectionError as e:
@@ -86,6 +90,11 @@ def generar_pdf_view(request, cedula):
             'PRIMER_APELLIDO': datos_empleado.get('PRIMER APELLIDO', ''),
             'SEGUNDO_APELLIDO': datos_empleado.get('SEGUNDO APELLIDO', ''),
             'NOMBRES': datos_empleado.get('NOMBRES', ''),
+            'FECHA_NACIMIENTO': datos_empleado.get('FECHA DE NACIMIENTO', ''),
+            'PAIS_NACIMIENTO': datos_empleado.get('PAIS DE NACIMIENTO', ''),
+            'CODIGO_SEXO': datos_empleado.get('CODIGO SEXO', ''),
+            'DEPARTAMENTO_NACIMIENTO': datos_empleado.get('DEPARTAMENTO NACIMIENTO', ''),
+            'CIUDAD_NACIMIENTO': datos_empleado.get('CIUDAD DE NACIMIENTO', ''),
         }
 
         # Generar nombre del archivo
