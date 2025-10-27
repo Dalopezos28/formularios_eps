@@ -2,14 +2,22 @@ import gspread
 from google.oauth2.service_account import Credentials
 
 # Google Sheets API setup
-SCOPE = ["https://www.googleapis.com/auth/spreadsheets"] 
+SCOPE = ["https://www.googleapis.com/auth/spreadsheets"]
 SERVICE_ACCOUNT_FILE = 'service_account.json'
 SPREADSHEET_ID = '1OzyM4jlADde1MKU7INbtXvVOUaqD1KfZH_gFLOciwNk'
 
-creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
-client = gspread.authorize(creds)
+# Lazy loading del client para evitar errores al importar
+_client = None
+
+def get_client():
+    global _client
+    if _client is None:
+        creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
+        _client = gspread.authorize(creds)
+    return _client
 
 def get_sheet_data(sheet_name):
+    client = get_client()
     sheet = client.open_by_key(SPREADSHEET_ID).worksheet(sheet_name)
     return sheet.get_all_records()
 
