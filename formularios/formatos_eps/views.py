@@ -33,7 +33,17 @@ def search_results_view(request):
 
     if cedula:
         try:
-            results = find_row_by_cedula(cedula)
+            result_data = find_row_by_cedula(cedula)
+            if result_data:
+                # Normalizar las claves del diccionario (reemplazar espacios con guiones bajos)
+                normalized_result = {
+                    'CEDULA': result_data.get('CEDULA', ''),
+                    'PRIMER_APELLIDO': result_data.get('PRIMER APELLIDO', ''),
+                    'SEGUNDO_APELLIDO': result_data.get('SEGUNDO APELLIDO', ''),
+                    'NOMBRES': result_data.get('NOMBRES', ''),
+                    # Puedes agregar más campos aquí si los necesitas
+                }
+                results = normalized_result
         except ConnectionError as e:
             error_message = "Error de conexión con Google Sheets. Por favor, verifique la configuración de credenciales."
             messages.error(request, error_message)
