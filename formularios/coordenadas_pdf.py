@@ -7,7 +7,7 @@ def marcar_coordenadas_pdf(input_pdf, output_pdf, coordenadas_marcas):
 
     coordenadas_marcas: lista de dicts con:
       {
-        "x": 100, "y": 200,
+        "x": 80, "y": 200,
         "label": "Posición 1",  # opcional
         "color": (1, 0, 0),    # rojo por defecto
         "size": 5              # tamaño del círculo

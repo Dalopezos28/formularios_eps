@@ -12,3 +12,4 @@ PyMuPDF==1.23.8
 
 # Additional dependencies
 python-dotenv==1.0.0
+fitz==0.0.1
