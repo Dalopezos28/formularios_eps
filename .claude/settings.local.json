@@ -4,7 +4,8 @@
       "Bash(source ../formulario/bin/activate)",
       "Bash(python manage.py makemigrations:*)",
       "Bash(../formulario/Scripts/python.exe manage.py makemigrations)",
-      "Bash(../formulario/Scripts/python.exe manage.py migrate)"
+      "Bash(../formulario/Scripts/python.exe manage.py migrate)",
+      "Bash(/mnt/c/Users/diego/OneDrive/Desktop/CHVS/formularios_eps/formulario/Scripts/python.exe:*)"
     ],
     "deny": [],
     "ask": []

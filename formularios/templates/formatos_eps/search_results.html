@@ -1,40 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
+    <title>Resultados de Búsqueda - Sistema EPS</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'formatos_eps/css/style.css' %}">
 </head>
-<body>
-    <div class="container">
-        <a href="{% url 'formatos_eps:search' %}">Nueva Búsqueda</a>
-        {% if results %}
-            <h3>Resultados:</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Cédula</th>
-                        <th>Primer Apellido</th>
-                        <th>Segundo Apellido</th>
-                        <th>Nombres</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for row in results %}
-                        <tr>
-                            <td>{{ row.CEDULA }}</td>
-                            <td>{{ row.PRIMER_APELLIDO }}</td>
-                            <td>{{ row.SEGUNDO_APELLIDO }}</td>
-                            <td>{{ row.NOMBRES }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p>No se encontraron resultados para la cédula proporcionada.</p>
+<body class="app-page">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-brand">
+                <svg class="navbar-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
+                </svg>
+                <span class="navbar-title">Sistema EPS</span>
+            </div>
+            <div class="navbar-user">
+                <div class="user-info">
+                    <svg class="user-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span>{{ user.username }}</span>
+                </div>
+                <a href="{% url 'formatos_eps:logout' %}" class="btn-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"></path>
+                    </svg>
+                    Cerrar Sesión
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
         {% endif %}
-    </div>
+
+        <div class="card">
+            <div class="card-header">
+                <h1 class="card-title">Resultados de Búsqueda</h1>
+                <p class="card-subtitle">Búsqueda realizada para la cédula: <strong>{{ cedula }}</strong></p>
+            </div>
+
+            <div class="search-actions">
+                <a href="{% url 'formatos_eps:search' %}" class="btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                        <path d="M19 12H5M12 19l-7-7 7-7"></path>
+                    </svg>
+                    Nueva Búsqueda
+                </a>
+            </div>
+
+            {% if results %}
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cédula</th>
+                                <th>Primer Apellido</th>
+                                <th>Segundo Apellido</th>
+                                <th>Nombres</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in results %}
+                                <tr>
+                                    <td><strong>{{ row.CEDULA }}</strong></td>
+                                    <td>{{ row.PRIMER_APELLIDO }}</td>
+                                    <td>{{ row.SEGUNDO_APELLIDO }}</td>
+                                    <td>{{ row.NOMBRES }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% elif not error_message %}
+                <div class="empty-state">
+                    <svg class="empty-state-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="M21 21l-4.35-4.35"></path>
+                        <line x1="11" y1="8" x2="11" y2="12"></line>
+                        <line x1="11" y1="16" x2="11.01" y2="16"></line>
+                    </svg>
+                    <h3>No se encontraron resultados</h3>
+                    <p>No se encontró ningún empleado con la cédula proporcionada.</p>
+                    <p style="margin-top: 0.5rem;">Por favor, verifique el número e intente nuevamente.</p>
+                </div>
+            {% endif %}
+        </div>
+    </main>
 </body>
 </html>
