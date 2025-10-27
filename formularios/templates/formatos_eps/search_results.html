@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'formatos_eps/css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'formatos_eps:search' %}">Nueva Búsqueda</a>
+        {% if results %}
+            <h3>Resultados:</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cédula</th>
+                        <th>Primer Apellido</th>
+                        <th>Segundo Apellido</th>
+                        <th>Nombres</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                        <tr>
+                            <td>{{ row.CEDULA }}</td>
+                            <td>{{ row.PRIMER_APELLIDO }}</td>
+                            <td>{{ row.SEGUNDO_APELLIDO }}</td>
+                            <td>{{ row.NOMBRES }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No se encontraron resultados para la cédula proporcionada.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'formatos_eps/css/style.css' %}">
+</head>
+<body>
+    <div class="container">
+        <form action="{% url 'formatos_eps:search' %}" method="get">
+            <h2>Bienvenido</h2>
+            <button type="submit">Ingresar</button>
+        </form>
+    </div>
+</body>
+</html>
