@@ -2,7 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.http import FileResponse, Http404
 from .google_sheets import find_row_by_cedula
+from .pdf_generator import rellenar_pdf_empleado, generar_nombre_archivo_pdf
+import os
+import tempfile
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -62,3 +66,54 @@ def logout_view(request):
     logout(request)
     messages.success(request, 'Sesión cerrada correctamente')
     return redirect('formatos_eps:login')
+
+@login_required(login_url='formatos_eps:login')
+def generar_pdf_view(request, cedula):
+    """
+    Vista para generar y descargar el PDF del formulario EPS con los datos del empleado.
+    """
+    try:
+        # Buscar datos del empleado
+        datos_empleado = find_row_by_cedula(cedula)
+
+        if not datos_empleado:
+            messages.error(request, f'No se encontró empleado con cédula {cedula}')
+            return redirect('formatos_eps:search_results') + f'?cedula={cedula}'
+
+        # Normalizar datos (igual que en search_results_view)
+        datos_normalizados = {
+            'CEDULA': datos_empleado.get('CEDULA', ''),
+            'PRIMER_APELLIDO': datos_empleado.get('PRIMER APELLIDO', ''),
+            'SEGUNDO_APELLIDO': datos_empleado.get('SEGUNDO APELLIDO', ''),
+            'NOMBRES': datos_empleado.get('NOMBRES', ''),
+        }
+
+        # Generar nombre del archivo
+        nombre_archivo = generar_nombre_archivo_pdf(cedula)
+
+        # Crear archivo temporal para el PDF
+        temp_dir = tempfile.gettempdir()
+        output_path = os.path.join(temp_dir, nombre_archivo)
+
+        # Generar PDF
+        rellenar_pdf_empleado(datos_normalizados, output_path)
+
+        # Retornar el PDF como descarga
+        response = FileResponse(
+            open(output_path, 'rb'),
+            content_type='application/pdf',
+            as_attachment=True,
+            filename=nombre_archivo
+        )
+
+        return response
+
+    except ConnectionError as e:
+        messages.error(request, 'Error de conexión con Google Sheets')
+        return redirect('formatos_eps:search')
+    except FileNotFoundError as e:
+        messages.error(request, 'No se encontró el archivo PDF template')
+        return redirect('formatos_eps:search')
+    except Exception as e:
+        messages.error(request, f'Error al generar el PDF: {str(e)}')
+        return redirect('formatos_eps:search')
