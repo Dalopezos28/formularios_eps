@@ -5,6 +5,14 @@ service_account.json
 .env
 .env.local
 secrets.py
+google_credentials_for_railway.txt
+
+# Scripts de administración con credenciales
+check_database.py
+check_user_password.py
+create_superuser.py
+create_superuser_internal.py
+fix_users.py
 
 # Python
 __pycache__/
