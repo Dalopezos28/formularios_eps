@@ -1,0 +1,1 @@
+web: cd formularios && gunicorn formularios.wsgi --bind 0.0.0.0:$PORT
