@@ -5,7 +5,16 @@
       "Bash(python manage.py makemigrations:*)",
       "Bash(../formulario/Scripts/python.exe manage.py makemigrations)",
       "Bash(../formulario/Scripts/python.exe manage.py migrate)",
-      "Bash(/mnt/c/Users/diego/OneDrive/Desktop/CHVS/formularios_eps/formulario/Scripts/python.exe:*)"
+      "Bash(/mnt/c/Users/diego/OneDrive/Desktop/CHVS/formularios_eps/formulario/Scripts/python.exe:*)",
+      "WebFetch(domain:web-production-d3de.up.railway.app)",
+      "Bash(railway whoami:*)",
+      "Read(//mnt/c/Users/diego/OneDrive/Desktop/CHVS/**)",
+      "Bash(formulario/Scripts/python.exe -m pip install:*)",
+      "Bash(export DATABASE_URL=\"postgresql://postgres:VOMPhCJIiAuLDWSNeAGAbmkFMWocijQA@switchyard.proxy.rlwy.net:25858/railway\")",
+      "Bash(export CSRF_TRUSTED_ORIGINS=\"https://web-production-d3de.up.railway.app\")",
+      "Bash(export ALLOWED_HOSTS=\"web-production-d3de.up.railway.app\")",
+      "Bash(../formulario/Scripts/python.exe manage.py migrate:*)",
+      "Bash(formulario/Scripts/python.exe formularios/manage.py shell --skip-checks)"
     ],
     "deny": [],
     "ask": []
