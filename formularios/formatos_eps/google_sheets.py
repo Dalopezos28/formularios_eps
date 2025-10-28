@@ -2,15 +2,10 @@ import gspread
 from google.oauth2.service_account import Credentials
 import logging
 import os
+import json
 
 # Google Sheets API setup
 SCOPE = ["https://www.googleapis.com/auth/spreadsheets"]
-
-# Ruta absoluta al archivo de credenciales
-# El archivo está en la carpeta del proyecto Django (un nivel arriba de formatos_eps)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'service_account.json')
-
 SPREADSHEET_ID = '1OzyM4jlADde1MKU7INbtXvVOUaqD1KfZH_gFLOciwNk'
 
 # Lazy loading del client para evitar errores al importar
@@ -18,12 +13,57 @@ _client = None
 
 logger = logging.getLogger(__name__)
 
+def get_credentials():
+    """
+    Obtiene las credenciales de Google desde variable de entorno o archivo.
+
+    Prioridad:
+    1. Variable de entorno GOOGLE_CREDENTIALS (JSON string) - Para producción
+    2. Archivo service_account.json - Para desarrollo local
+    """
+    # Intentar obtener desde variable de entorno (Railway, producción)
+    google_creds_env = os.environ.get('GOOGLE_CREDENTIALS')
+
+    if google_creds_env:
+        logger.info("Usando credenciales desde variable de entorno GOOGLE_CREDENTIALS")
+        try:
+            # Parsear el JSON desde la variable de entorno
+            creds_dict = json.loads(google_creds_env)
+            creds = Credentials.from_service_account_info(creds_dict, scopes=SCOPE)
+            return creds
+        except json.JSONDecodeError as e:
+            logger.error(f"Error al parsear GOOGLE_CREDENTIALS: {str(e)}")
+            raise ValueError("Variable GOOGLE_CREDENTIALS tiene formato JSON inválido")
+        except Exception as e:
+            logger.error(f"Error al crear credenciales desde variable de entorno: {str(e)}")
+            raise
+
+    # Fallback: usar archivo local (desarrollo)
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    SERVICE_ACCOUNT_FILE = os.path.join(BASE_DIR, 'service_account.json')
+
+    if os.path.exists(SERVICE_ACCOUNT_FILE):
+        logger.info(f"Usando credenciales desde archivo: {SERVICE_ACCOUNT_FILE}")
+        try:
+            creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
+            return creds
+        except Exception as e:
+            logger.error(f"Error al leer archivo de credenciales: {str(e)}")
+            raise
+
+    # No hay credenciales disponibles
+    raise FileNotFoundError(
+        "No se encontraron credenciales de Google. "
+        "Configure la variable GOOGLE_CREDENTIALS o agregue service_account.json"
+    )
+
 def get_client():
     global _client
     if _client is None:
         try:
-            creds = Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE, scopes=SCOPE)
+            creds = get_credentials()
             _client = gspread.authorize(creds)
+            logger.info("Cliente de Google Sheets autorizado exitosamente")
         except Exception as e:
             logger.error(f"Error al conectar con Google Sheets: {str(e)}")
             raise ConnectionError(f"No se pudo conectar con Google Sheets. Verifique las credenciales: {str(e)}")
