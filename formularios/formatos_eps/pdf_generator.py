@@ -251,7 +251,7 @@ def rellenar_pdf_empleado(datos_empleado, output_path):
         # Insertar DEPARTAMENTO DE NACIMIENTO
         if departamento_nacimiento:
             coords = COORDENADAS_CAMPOS['DEPARTAMENTO_NACIMIENTO']
-            insertar_texto_en_pdf(page, departamento_nacimiento, coords['x'], coords['y'], fontsize=10)
+            insertar_texto_en_pdf(page, departamento_nacimiento, coords['x'], coords['y'], fontsize=8)
 
         # Insertar CIUDAD DE NACIMIENTO
         if ciudad_nacimiento:
